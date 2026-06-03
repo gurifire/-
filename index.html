@@ -6,862 +6,542 @@
 <title>출동 브리핑 | 구리소방서</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
-
   :root {
-    --red: #E8291A;
-    --red-dark: #B01F13;
-    --red-dim: rgba(232,41,26,0.12);
-    --yellow: #F5A623;
-    --yellow-dim: rgba(245,166,35,0.12);
-    --green: #27AE60;
-    --green-dim: rgba(39,174,96,0.12);
-    --bg: #0D0F14;
-    --bg2: #151820;
-    --bg3: #1C2030;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.14);
-    --text: #F0F2F7;
-    --muted: #8A8FA8;
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'Noto Sans KR', sans-serif;
+    --red:#E8291A; --red-dark:#B01F13; --red-dim:rgba(232,41,26,0.12);
+    --yellow:#F5A623; --yellow-dim:rgba(245,166,35,0.12);
+    --green:#27AE60; --green-dim:rgba(39,174,96,0.12);
+    --blue:#2D7DD2; --blue-dim:rgba(45,125,210,0.12);
+    --bg:#0D0F14; --bg2:#151820; --bg3:#1C2030;
+    --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.14);
+    --text:#F0F2F7; --muted:#8A8FA8;
+    --mono:'JetBrains Mono',monospace; --sans:'Noto Sans KR',sans-serif;
   }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;}
+  header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px;}
+  .logo-badge{background:var(--red);color:#fff;font-size:11px;font-weight:700;letter-spacing:.08em;padding:4px 8px;border-radius:4px;}
+  header h1{font-size:15px;font-weight:700;}
+  header .clock{font-size:12px;color:var(--muted);margin-left:auto;font-family:var(--mono);}
+  main{flex:1;max-width:680px;width:100%;margin:0 auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:16px;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* 입력 카드 */
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+  .card-label{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;display:block;}
+  .input-row{display:flex;gap:10px;}
+  .input-row input[type=text]{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:15px;padding:12px 14px;outline:none;transition:border-color .2s;}
+  .input-row input[type=text]:focus{border-color:var(--red);}
+  .input-row input::placeholder{color:var(--muted);}
+  .btn-main{background:var(--red);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:14px;font-weight:700;padding:12px 18px;cursor:pointer;white-space:nowrap;transition:background .15s,transform .1s;display:flex;align-items:center;gap:6px;}
+  .btn-main:hover{background:var(--red-dark);}
+  .btn-main:active{transform:scale(.97);}
+  .btn-main:disabled{background:#444;cursor:not-allowed;}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;}
+  .hint span{cursor:pointer;border-bottom:1px dashed var(--border2);transition:color .15s;}
+  .hint span:hover{color:var(--text);}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+  /* API 키 섹션 */
+  .api-section{border-top:1px solid var(--border);margin-top:14px;padding-top:14px;display:flex;flex-direction:column;gap:8px;}
+  .api-row{display:flex;align-items:center;gap:8px;}
+  .api-row label{font-size:11px;color:var(--muted);white-space:nowrap;min-width:110px;}
+  .api-row input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-family:var(--mono);font-size:12px;padding:8px 10px;outline:none;}
+  .api-row input:focus{border-color:var(--border2);}
+  .api-note{font-size:11px;color:var(--muted);}
+  .api-note a,.api-note span{color:var(--yellow);cursor:pointer;text-decoration:none;}
+  .api-note a:hover,.api-note span:hover{text-decoration:underline;}
 
-  /* ── 헤더 ── */
-  header {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .logo-badge {
-    background: var(--red);
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-  header h1 {
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-  header span {
-    font-size: 12px;
-    color: var(--muted);
-    margin-left: auto;
-    font-family: var(--mono);
-  }
+  /* 데이터 소스 표시 */
+  .source-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:4px;text-transform:uppercase;}
+  .source-real{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(45,125,210,.3);}
+  .source-ai{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(245,166,35,.3);}
 
-  /* ── 메인 ── */
-  main {
-    flex: 1;
-    max-width: 680px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 24px 16px 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+  /* 로딩 */
+  .loading{display:none;flex-direction:column;align-items:center;gap:14px;padding:36px 20px;color:var(--muted);font-size:13px;}
+  .loading.active{display:flex;}
+  .spinner{width:32px;height:32px;border:2px solid var(--border2);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-steps{display:flex;flex-direction:column;gap:6px;width:100%;max-width:320px;}
+  .lstep{font-size:12px;font-family:var(--mono);color:var(--border2);display:flex;align-items:center;gap:8px;transition:color .3s;}
+  .lstep.done{color:var(--green);}
+  .lstep.active{color:var(--text);}
+  .lstep::before{content:'○';font-size:10px;}
+  .lstep.done::before{content:'✓';}
+  .lstep.active::before{content:'▶';color:var(--red);animation:blink .8s ease infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-  /* ── 입력 카드 ── */
-  .input-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-  }
-  .input-card label {
-    display: block;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: var(--muted);
-    margin-bottom: 10px;
-    text-transform: uppercase;
-  }
-  .input-row {
-    display: flex;
-    gap: 10px;
-  }
-  .input-row input {
-    flex: 1;
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 15px;
-    padding: 12px 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .input-row input:focus {
-    border-color: var(--red);
-  }
-  .input-row input::placeholder {
-    color: var(--muted);
-  }
-  .btn-briefing {
-    background: var(--red);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 700;
-    padding: 12px 20px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.15s, transform 0.1s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .btn-briefing:hover { background: var(--red-dark); }
-  .btn-briefing:active { transform: scale(0.97); }
-  .btn-briefing:disabled { background: #444; cursor: not-allowed; }
+  /* 에러 */
+  .error-box{display:none;background:var(--red-dim);border:1px solid rgba(232,41,26,.3);border-radius:10px;padding:14px 16px;font-size:13px;color:#f88;line-height:1.6;}
+  .error-box.active{display:block;}
 
-  .hint {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 10px;
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .hint span {
-    cursor: pointer;
-    border-bottom: 1px dashed var(--border2);
-    transition: color 0.15s;
-  }
-  .hint span:hover { color: var(--text); }
+  /* 결과 */
+  .result-card{display:none;background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;animation:fadeUp .4s ease;}
+  .result-card.active{display:block;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-  /* ── API키 입력 ── */
-  .api-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid var(--border);
-    align-items: center;
-  }
-  .api-row label {
-    font-size: 11px;
-    color: var(--muted);
-    white-space: nowrap;
-    margin: 0;
-    text-transform: none;
-    letter-spacing: 0;
-  }
-  .api-row input {
-    flex: 1;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 8px 10px;
-    outline: none;
-  }
-  .api-row input:focus { border-color: var(--border2); }
+  .risk-banner{padding:16px 20px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border);}
+  .risk-banner.high{background:var(--red-dim);border-bottom-color:rgba(232,41,26,.2);}
+  .risk-banner.mid{background:var(--yellow-dim);border-bottom-color:rgba(245,166,35,.2);}
+  .risk-banner.low{background:var(--green-dim);border-bottom-color:rgba(39,174,96,.2);}
+  .risk-icon{font-size:26px;line-height:1;}
+  .risk-info{flex:1;}
+  .risk-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+  .risk-title{font-size:20px;font-weight:900;letter-spacing:-.02em;}
+  .risk-banner.high .risk-title{color:var(--red);}
+  .risk-banner.mid .risk-title{color:var(--yellow);}
+  .risk-banner.low .risk-title{color:var(--green);}
+  .addr-badge{font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:4px 8px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-  /* ── 로딩 ── */
-  .loading {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    padding: 40px 20px;
-    color: var(--muted);
-    font-size: 13px;
-  }
-  .loading.active { display: flex; }
-  .spinner {
-    width: 36px; height: 36px;
-    border: 2px solid var(--border2);
-    border-top-color: var(--red);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-steps { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 300px; }
-  .loading-step {
-    font-size: 12px;
-    font-family: var(--mono);
-    color: var(--border2);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: color 0.3s;
-  }
-  .loading-step.done { color: var(--green); }
-  .loading-step.active { color: var(--text); }
-  .loading-step::before { content: '○'; font-size: 10px; }
-  .loading-step.done::before { content: '✓'; }
-  .loading-step.active::before { content: '▶'; color: var(--red); animation: blink 0.8s ease infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .meta-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);}
+  .meta-item{padding:12px 14px;border-right:1px solid var(--border);}
+  .meta-item:last-child{border-right:none;}
+  .meta-key{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+  .meta-val{font-size:13px;font-weight:700;font-family:var(--mono);}
+  .meta-source{font-size:9px;color:var(--blue);margin-top:2px;}
 
-  /* ── 결과 카드 ── */
-  .result-card {
-    display: none;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    animation: fadeUp 0.4s ease;
-  }
-  .result-card.active { display: block; }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  .section{padding:14px 20px;border-bottom:1px solid var(--border);}
+  .section:last-child{border-bottom:none;}
+  .section-header{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .section-header::after{content:'';flex:1;height:1px;background:var(--border);}
+  .section-body{font-size:13px;line-height:1.75;color:var(--text);}
 
-  /* 위험도 배너 */
-  .risk-banner {
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    border-bottom: 1px solid var(--border);
-  }
-  .risk-banner.high { background: var(--red-dim); border-bottom-color: rgba(232,41,26,0.2); }
-  .risk-banner.mid  { background: var(--yellow-dim); border-bottom-color: rgba(245,166,35,0.2); }
-  .risk-banner.low  { background: var(--green-dim); border-bottom-color: rgba(39,174,96,0.2); }
+  .caution-list{display:flex;flex-direction:column;gap:7px;}
+  .caution-item{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.6;padding:9px 12px;background:var(--bg3);border-radius:7px;border-left:3px solid transparent;}
+  .caution-item.warn{border-left-color:var(--red);}
+  .caution-item.info{border-left-color:var(--yellow);}
+  .caution-item.ok{border-left-color:var(--green);}
 
-  .risk-icon { font-size: 28px; line-height: 1; }
-  .risk-info { flex: 1; }
-  .risk-label {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 2px;
-  }
-  .risk-title {
-    font-size: 20px;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-  }
-  .risk-banner.high .risk-title { color: var(--red); }
-  .risk-banner.mid  .risk-title { color: var(--yellow); }
-  .risk-banner.low  .risk-title { color: var(--green); }
+  .hydrant-item{display:flex;align-items:center;gap:10px;font-size:13px;padding:9px 12px;background:var(--bg3);border-radius:7px;margin-bottom:7px;}
+  .hydrant-dist{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto;}
 
-  .address-badge {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 4px 8px;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+  /* 실제 데이터 하이라이트 */
+  .real-data-row{background:var(--blue-dim);border:1px solid rgba(45,125,210,.2);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#7ab8f0;display:flex;gap:8px;align-items:flex-start;}
 
-  /* 메타 정보 행 */
-  .meta-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-bottom: 1px solid var(--border);
-  }
-  .meta-item {
-    padding: 14px 16px;
-    border-right: 1px solid var(--border);
-  }
-  .meta-item:last-child { border-right: none; }
-  .meta-key {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 4px;
-  }
-  .meta-val {
-    font-size: 14px;
-    font-weight: 700;
-    font-family: var(--mono);
-  }
+  .result-footer{padding:10px 20px;display:flex;justify-content:space-between;align-items:center;background:var(--bg3);}
+  .result-footer span{font-size:11px;color:var(--muted);font-family:var(--mono);}
+  .btn-copy{background:none;border:1px solid var(--border2);color:var(--muted);border-radius:6px;font-size:12px;padding:5px 12px;cursor:pointer;font-family:var(--sans);transition:all .15s;}
+  .btn-copy:hover{border-color:var(--text);color:var(--text);}
 
-  /* 본문 섹션들 */
-  .sections { padding: 0 0 4px; }
-  .section {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-  .section:last-child { border-bottom: none; }
-  .section-header {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .section-header::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-  .section-body {
-    font-size: 14px;
-    line-height: 1.75;
-    color: var(--text);
-    white-space: pre-wrap;
-  }
+  /* 안내 가이드 */
+  .guide-box{display:none;background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:18px 20px;}
+  .guide-box.active{display:block;}
+  .guide-box h3{font-size:13px;margin-bottom:12px;}
+  .guide-steps{counter-reset:step;display:flex;flex-direction:column;gap:9px;}
+  .guide-step{counter-increment:step;display:flex;gap:10px;font-size:12px;line-height:1.6;color:var(--muted);}
+  .guide-step::before{content:counter(step);background:var(--bg3);border:1px solid var(--border2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text);flex-shrink:0;margin-top:1px;}
+  .guide-step a{color:var(--yellow);text-decoration:none;}
 
-  /* 주의사항 리스트 */
-  .caution-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .caution-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 13px;
-    line-height: 1.6;
-    padding: 10px 12px;
-    background: var(--bg3);
-    border-radius: 8px;
-    border-left: 3px solid transparent;
-  }
-  .caution-item.warn { border-left-color: var(--red); }
-  .caution-item.info { border-left-color: var(--yellow); }
-  .caution-item.ok   { border-left-color: var(--green); }
-  .caution-dot { font-size: 16px; line-height: 1.4; flex-shrink: 0; }
-
-  /* 소화전 */
-  .hydrant-box {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 13px;
-  }
-  .hydrant-icon { font-size: 22px; }
-  .hydrant-info { flex: 1; }
-  .hydrant-dist { font-family: var(--mono); font-size: 12px; color: var(--muted); }
-
-  /* 타임스탬프 푸터 */
-  .result-footer {
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--bg3);
-  }
-  .result-footer span {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: var(--mono);
-  }
-  .btn-copy {
-    background: none;
-    border: 1px solid var(--border2);
-    color: var(--muted);
-    border-radius: 6px;
-    font-size: 12px;
-    padding: 5px 12px;
-    cursor: pointer;
-    font-family: var(--sans);
-    transition: all 0.15s;
-  }
-  .btn-copy:hover { border-color: var(--text); color: var(--text); }
-
-  /* ── 에러 ── */
-  .error-box {
-    display: none;
-    background: var(--red-dim);
-    border: 1px solid rgba(232,41,26,0.3);
-    border-radius: 10px;
-    padding: 16px 18px;
-    font-size: 13px;
-    color: #f88;
-    line-height: 1.6;
-  }
-  .error-box.active { display: block; }
-
-  /* ── API키 안내 모달 ── */
-  .guide-box {
-    display: none;
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: 12px;
-    padding: 20px;
-  }
-  .guide-box.active { display: block; }
-  .guide-box h3 { font-size: 14px; margin-bottom: 14px; }
-  .guide-steps { counter-reset: step; display: flex; flex-direction: column; gap: 10px; }
-  .guide-step {
-    counter-increment: step;
-    display: flex;
-    gap: 12px;
-    font-size: 13px;
-    line-height: 1.6;
-    color: var(--muted);
-  }
-  .guide-step::before {
-    content: counter(step);
-    background: var(--bg3);
-    border: 1px solid var(--border2);
-    border-radius: 50%;
-    width: 22px; height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text);
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .guide-step a { color: var(--yellow); text-decoration: none; }
-  .guide-step a:hover { text-decoration: underline; }
-
-  @media (max-width: 480px) {
-    .meta-row { grid-template-columns: repeat(2, 1fr); }
-    .meta-item:nth-child(2) { border-right: none; }
-    .meta-item:nth-child(3) { border-top: 1px solid var(--border); }
-    .input-row { flex-direction: column; }
+  @media(max-width:480px){
+    .meta-row{grid-template-columns:repeat(2,1fr);}
+    .meta-item:nth-child(2){border-right:none;}
+    .meta-item:nth-child(3){border-top:1px solid var(--border);}
+    .input-row{flex-direction:column;}
   }
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo-badge">🚒 구리소방서</div>
   <h1>출동 전 건물 위험 브리핑</h1>
-  <span id="clock"></span>
+  <span class="clock" id="clock"></span>
 </header>
 
 <main>
-
-  <!-- 입력 카드 -->
-  <div class="input-card">
-    <label>신고 주소 입력</label>
+  <div class="card">
+    <span class="card-label">신고 주소 입력</span>
     <div class="input-row">
-      <input type="text" id="address-input" placeholder="예: 경기도 구리시 검배로 24" autocomplete="off" />
-      <button class="btn-briefing" id="btn-go" onclick="runBriefing()">
-        <span>🔍</span> 브리핑 생성
-      </button>
+      <input type="text" id="addr" placeholder="예: 경기도 구리시 검배로 24" autocomplete="off"/>
+      <button class="btn-main" id="btn-go" onclick="runBriefing()">🔍 브리핑</button>
     </div>
     <div class="hint">
-      <span onclick="setAddr('경기도 구리시 검배로 24')">구리소방서</span>
-      <span onclick="setAddr('경기도 구리시 수택동 주택가 3층 건물')">수택동 주택</span>
-      <span onclick="setAddr('경기도 구리시 인창동 공장지대 창고')">인창동 창고</span>
-      <span onclick="setAddr('경기도 구리시 교문동 노인복지관')">교문동 노인복지관</span>
+      <span onclick="sa('경기도 구리시 검배로 24')">구리소방서</span>
+      <span onclick="sa('경기도 구리시 수택동 356')">수택동 주택</span>
+      <span onclick="sa('경기도 구리시 인창동 공장')">인창동 공장</span>
+      <span onclick="sa('경기도 구리시 교문동 노인복지관')">교문동 복지관</span>
     </div>
-    <div class="api-row">
-      <label>Gemini API Key</label>
-      <input type="password" id="api-key" placeholder="AIza... (aistudio.google.com에서 무료 발급)" />
-    </div>
-    <div style="margin-top:8px; font-size:11px; color:var(--muted);">
-      API 키 없이 <span style="color:var(--yellow); cursor:pointer;" onclick="toggleGuide()">▶ 발급 방법 보기</span>
-      &nbsp;|&nbsp; 키가 없으면 <span style="color:var(--yellow); cursor:pointer;" onclick="useDemoMode()">데모 모드로 체험</span>
+
+    <div class="api-section">
+      <div class="api-row">
+        <label>Gemini API Key</label>
+        <input type="password" id="gemini-key" placeholder="AIza... (필수 — aistudio.google.com 무료 발급)"/>
+      </div>
+      <div class="api-row">
+        <label>건축물대장 API Key <span style="color:var(--blue);font-size:10px;">[선택]</span></label>
+        <input type="password" id="building-key" placeholder="공공데이터포털 인증키 (없으면 AI 추정 사용)"/>
+      </div>
+      <div class="api-note">
+        Gemini: <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> 무료 발급 &nbsp;|&nbsp;
+        건축물대장: <a href="https://www.data.go.kr/data/15134735/openapi.do" target="_blank">data.go.kr</a> 무료 발급 &nbsp;|&nbsp;
+        <span onclick="toggleGuide()">발급 방법 보기 ▾</span> &nbsp;|&nbsp;
+        <span onclick="demoMode()">데모 체험</span>
+      </div>
     </div>
   </div>
 
-  <!-- API키 발급 안내 -->
-  <div class="guide-box" id="guide-box">
-    <h3>🔑 Gemini API Key 무료 발급 방법</h3>
-    <div class="guide-steps">
-      <div class="guide-step"><span><a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> 접속 (구글 계정 필요)</span></div>
-      <div class="guide-step"><span>상단 <b>Get API Key</b> 클릭 → <b>Create API Key</b></span></div>
-      <div class="guide-step"><span>생성된 <b>AIza...</b> 로 시작하는 키를 복사</span></div>
-      <div class="guide-step"><span>위 입력창에 붙여넣기 → 브리핑 생성 클릭</span></div>
+  <!-- 가이드 -->
+  <div class="guide-box" id="guide">
+    <h3>🔑 API Key 발급 방법</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--yellow);margin-bottom:8px;">Gemini API (필수 · 무료)</div>
+        <div class="guide-steps">
+          <div class="guide-step"><span><a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> 접속</span></div>
+          <div class="guide-step"><span>Get API Key → Create API Key</span></div>
+          <div class="guide-step"><span>AIza... 키 복사 후 위에 입력</span></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:8px;">건축물대장 API (선택 · 무료)</div>
+        <div class="guide-steps">
+          <div class="guide-step"><span><a href="https://www.data.go.kr" target="_blank">data.go.kr</a> 회원가입</span></div>
+          <div class="guide-step"><span>"건축물대장정보" 검색 → 활용신청</span></div>
+          <div class="guide-step"><span>승인 후 인증키 복사 (1~2일 소요)</span></div>
+        </div>
+      </div>
     </div>
-    <div style="margin-top:12px; font-size:11px; color:var(--muted);">
-      ⚠️ API 키는 브라우저에만 저장되며 외부로 전송되지 않습니다. 하루 250건 무료.
-    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);">⚠️ API 키는 브라우저에만 저장되며 외부 서버로 전송되지 않습니다.</div>
   </div>
 
   <!-- 로딩 -->
   <div class="loading" id="loading">
     <div class="spinner"></div>
     <div class="loading-steps">
-      <div class="loading-step" id="step1">주소 분석 중...</div>
-      <div class="loading-step" id="step2">건물 정보 조회 중...</div>
-      <div class="loading-step" id="step3">위험 요소 분석 중...</div>
-      <div class="loading-step" id="step4">브리핑 생성 중...</div>
+      <div class="lstep" id="ls1">주소 분석 중...</div>
+      <div class="lstep" id="ls2">건축물대장 조회 중...</div>
+      <div class="lstep" id="ls3">위험 요소 분석 중...</div>
+      <div class="lstep" id="ls4">AI 브리핑 생성 중...</div>
     </div>
   </div>
 
   <!-- 에러 -->
-  <div class="error-box" id="error-box"></div>
+  <div class="error-box" id="err"></div>
 
-  <!-- 결과 카드 -->
-  <div class="result-card" id="result-card">
-    <div class="risk-banner" id="risk-banner">
-      <div class="risk-icon" id="risk-icon"></div>
+  <!-- 결과 -->
+  <div class="result-card" id="result">
+    <div class="risk-banner" id="rbanner">
+      <div class="risk-icon" id="ricon"></div>
       <div class="risk-info">
         <div class="risk-label">위험도 등급</div>
-        <div class="risk-title" id="risk-title"></div>
+        <div class="risk-title" id="rtitle"></div>
       </div>
-      <div class="address-badge" id="addr-badge"></div>
+      <div class="addr-badge" id="rbadge"></div>
     </div>
-
-    <div class="meta-row" id="meta-row"></div>
-
-    <div class="sections">
-      <div class="section">
-        <div class="section-header">건물 현황</div>
-        <div class="section-body" id="building-info"></div>
-      </div>
-      <div class="section">
-        <div class="section-header">진입 주의사항</div>
-        <div class="caution-list" id="caution-list"></div>
-      </div>
-      <div class="section" id="history-section">
-        <div class="section-header">출동 이력</div>
-        <div class="section-body" id="history-info"></div>
-      </div>
-      <div class="section" id="hydrant-section">
-        <div class="section-header">인근 소방용수</div>
-        <div id="hydrant-list"></div>
-      </div>
-    </div>
-
+    <div class="meta-row" id="meta"></div>
+    <div id="sections"></div>
     <div class="result-footer">
-      <span id="result-time"></span>
-      <button class="btn-copy" onclick="copyResult()">📋 텍스트 복사</button>
+      <span id="rtime"></span>
+      <button class="btn-copy" onclick="copyResult()">📋 복사</button>
     </div>
   </div>
-
 </main>
 
 <script>
-// ── 시계 ──
-function updateClock() {
-  const now = new Date();
-  document.getElementById('clock').textContent =
-    now.toLocaleDateString('ko-KR') + ' ' +
-    now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-}
-setInterval(updateClock, 1000);
-updateClock();
+// ── 시계
+function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(tick,1000);tick();
+function sa(v){document.getElementById('addr').value=v;}
+function toggleGuide(){document.getElementById('guide').classList.toggle('active');}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
-// ── 주소 빠른입력 ──
-function setAddr(v) {
-  document.getElementById('address-input').value = v;
-  document.getElementById('address-input').focus();
+// ── 로딩 스텝
+function setStep(n){
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById('ls'+i);
+    el.classList.remove('active','done');
+    if(i<n)el.classList.add('done');
+    else if(i===n)el.classList.add('active');
+  }
 }
+function showLoading(v){document.getElementById('loading').classList.toggle('active',v);}
+function showResult(v){document.getElementById('result').classList.toggle('active',v);}
+function showErr(msg){const e=document.getElementById('err');e.innerHTML='⚠️ '+msg;e.classList.add('active');setTimeout(()=>e.classList.remove('active'),8000);}
 
-// ── 가이드 토글 ──
-function toggleGuide() {
-  const g = document.getElementById('guide-box');
-  g.classList.toggle('active');
-}
+// ── 건축물대장 API 호출 (CORS 프록시 경유)
+async function fetchBuildingData(address, apiKey) {
+  // 주소에서 지번 파싱 시도 (간단 파싱)
+  const addrMatch = address.match(/구리시\s+(.+?동|.+?리)\s*(\d+)/);
+  if (!addrMatch || !apiKey) return null;
 
-// ── 로딩 단계 ──
-function setLoadingStep(n) {
-  for (let i = 1; i <= 4; i++) {
-    const el = document.getElementById('step' + i);
-    el.classList.remove('active', 'done');
-    if (i < n) el.classList.add('done');
-    else if (i === n) el.classList.add('active');
+  // 도로명주소 → 지번 변환은 복잡하므로, 건축물대장은 도로명주소로 직접 검색 가능한 기본개요 API 사용
+  const params = new URLSearchParams({
+    serviceKey: apiKey,
+    sigunguCd: '41310', // 구리시 코드
+    bjdongCd: '41310', 
+    numOfRows: '1',
+    pageNo: '1',
+    _type: 'json'
+  });
+
+  const BASE = 'https://apis.data.go.kr/1613000/BldRgstHubService/getBrTitleInfo';
+  const url = BASE + '?' + params.toString();
+  const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+
+  try {
+    const res = await fetch(proxyUrl);
+    const data = await res.json();
+    const item = data?.response?.body?.items?.item;
+    if (!item) return null;
+    const d = Array.isArray(item) ? item[0] : item;
+    return {
+      mainPurpsCdNm: d.mainPurpsCdNm || null,
+      strctCdNm: d.strctCdNm || null,
+      grndFlrCnt: d.grndFlrCnt || null,
+      ugrndFlrCnt: d.ugrndFlrCnt || null,
+      useAprDay: d.useAprDay ? String(d.useAprDay).substring(0,4) : null,
+      totArea: d.totArea || null,
+      bldNm: d.bldNm || null
+    };
+  } catch {
+    return null;
   }
 }
 
-// ── UI 상태 관리 ──
-function showLoading(v) {
-  document.getElementById('loading').classList.toggle('active', v);
-}
-function showResult(v) {
-  document.getElementById('result-card').classList.toggle('active', v);
-}
-function showError(msg) {
-  const el = document.getElementById('error-box');
-  el.textContent = '⚠️ ' + msg;
-  el.classList.add('active');
-  setTimeout(() => el.classList.remove('active'), 6000);
-}
+// ── Gemini 프롬프트
+function buildPrompt(address, realData) {
+  let dataSection = '';
+  let hasReal = false;
 
-// ── 위험도 렌더 ──
-function renderRisk(level) {
-  const banner = document.getElementById('risk-banner');
-  banner.className = 'risk-banner';
-  const icon = document.getElementById('risk-icon');
-  const title = document.getElementById('risk-title');
-  if (level === 'high') {
-    banner.classList.add('high');
-    icon.textContent = '🔴';
-    title.textContent = '고위험';
-  } else if (level === 'mid') {
-    banner.classList.add('mid');
-    icon.textContent = '🟡';
-    title.textContent = '보통';
+  if (realData) {
+    hasReal = true;
+    dataSection = `
+[건축물대장 실제 데이터 - 이 데이터를 최우선으로 사용하세요]
+- 건물명: ${realData.bldNm || '(없음)'}
+- 주용도: ${realData.mainPurpsCdNm || '(없음)'}
+- 구조: ${realData.strctCdNm || '(없음)'}
+- 지상층수: ${realData.grndFlrCnt || '(없음)'}층
+- 지하층수: ${realData.ugrndFlrCnt || '(없음)'}층
+- 사용승인연도: ${realData.useAprDay || '(없음)'}년
+- 연면적: ${realData.totArea || '(없음)'}㎡
+`;
   } else {
-    banner.classList.add('low');
-    icon.textContent = '🟢';
-    title.textContent = '저위험';
+    dataSection = `[건축물대장 데이터 없음 — 주소와 지역 특성을 기반으로 합리적으로 추정하세요]`;
   }
-}
 
-// ── 메타 행 렌더 ──
-function renderMeta(items) {
-  const row = document.getElementById('meta-row');
-  row.innerHTML = items.map(item => `
-    <div class="meta-item">
-      <div class="meta-key">${item.key}</div>
-      <div class="meta-val" style="color:${item.color||'var(--text)'}">${item.val}</div>
-    </div>
-  `).join('');
-}
+  return `당신은 대한민국 경기도 구리소방서 소방관을 위한 출동 전 건물 위험 브리핑 AI입니다.
+아래 정보를 바탕으로 현장 출동 전 핵심 정보를 JSON으로 응답하세요.
 
-// ── 주의사항 렌더 ──
-function renderCautions(items) {
-  const list = document.getElementById('caution-list');
-  list.innerHTML = items.map(item => `
-    <div class="caution-item ${item.type}">
-      <span class="caution-dot">${item.icon}</span>
-      <span>${item.text}</span>
-    </div>
-  `).join('');
-}
+신고 주소: ${address}
+${dataSection}
 
-// ── 소화전 렌더 ──
-function renderHydrants(items) {
-  const list = document.getElementById('hydrant-list');
-  list.innerHTML = items.map(h => `
-    <div class="hydrant-box" style="margin-bottom:8px">
-      <span class="hydrant-icon">🚒</span>
-      <div class="hydrant-info">
-        <div>${h.name}</div>
-        <div class="hydrant-dist">${h.dist}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-// ── Gemini API 프롬프트 ──
-const SYSTEM_PROMPT = `당신은 대한민국 경기도 구리소방서 재난대응과 소방관을 위한 출동 전 건물 위험 브리핑 AI입니다.
-소방관이 신고 주소를 입력하면 현장 출동 전 30초 안에 파악해야 할 핵심 정보를 구조화된 JSON으로 응답해야 합니다.
-
-반드시 다음 JSON 형식으로만 응답하세요. 다른 텍스트 없이 JSON만 출력하세요:
+다음 JSON 형식으로만 응답하세요 (다른 텍스트 없이):
 {
   "risk_level": "high" | "mid" | "low",
+  "data_source": "${hasReal ? 'real' : 'ai'}",
   "building": {
-    "type": "건물 용도 (예: 단독주택, 공장, 상가, 노인요양시설 등)",
-    "floors": "층수 (예: 지상3층/지하1층)",
-    "structure": "구조 (예: 철근콘크리트, 조적조, 경량철골)",
-    "year": "추정 건축연도 또는 연대 (예: 1980년대)",
-    "area": "대략적 연면적 (예: 약 200㎡)"
+    "type": "건물 용도",
+    "floors": "층수 표기 (예: 지상3층/지하1층)",
+    "structure": "구조",
+    "year": "건축연도 또는 연대",
+    "area": "연면적"
   },
-  "summary": "건물 현황 요약 2~3문장. 소방관 관점에서 꼭 알아야 할 구조적 특징, 재실인원 추정, 화재 시 특이사항 포함",
+  "summary": "건물 현황 요약 2~3문장. 소방관 관점 구조적 특징, 재실인원 추정, 화재 시 특이사항 포함.",
   "cautions": [
-    {"type": "warn"|"info"|"ok", "icon": "⚠️"|"ℹ️"|"✅", "text": "주의사항 1문장"},
-    ...3~5개
+    {"type": "warn"|"info"|"ok", "icon": "⚠️"|"ℹ️"|"✅", "text": "주의사항 1문장"}
   ],
-  "history": "출동 이력 추정 (해당 주소 유형의 일반적 출동 패턴 기술, 1~2문장)",
+  "history": "해당 건물 유형의 일반적 출동 패턴 1~2문장",
   "hydrants": [
-    {"name": "소화전 위치 설명", "dist": "추정 거리"},
-    ...2~3개
+    {"name": "소화전 위치 설명", "dist": "추정 거리"}
   ]
 }
 
-주소의 건물 유형, 지역 특성을 기반으로 실제 소방 현장에서 유용한 정보를 생성하세요.
-주택가라면 노후 건물·좁은 진입로를, 공장이라면 위험물·연기 등을, 노인시설이라면 자력대피 불가를 반드시 반영하세요.`;
+소방 현장 실무에서 유용한 정보만 생성하세요.
+${hasReal ? '실제 건축물대장 데이터가 있으므로 building 필드는 반드시 이 데이터 기반으로 작성하세요.' : '주소의 동네 특성, 건물 유형을 기반으로 실제적인 추정을 하세요. 단독주택 밀집지역이면 노후 건물·좁은 진입로, 공장지대면 위험물, 노인시설이면 자력대피 불가를 반드시 반영하세요.'}`;
+}
 
-// ── 메인 실행 ──
+// ── 메인 실행
 async function runBriefing() {
-  const address = document.getElementById('address-input').value.trim();
-  const apiKey = document.getElementById('api-key').value.trim();
+  const address = document.getElementById('addr').value.trim();
+  const geminiKey = document.getElementById('gemini-key').value.trim();
+  const buildingKey = document.getElementById('building-key').value.trim();
 
-  if (!address) { showError('주소를 입력해주세요.'); return; }
-  if (!apiKey) { showError('Gemini API Key를 입력해주세요. 아래 "발급 방법 보기"를 참고하세요.'); return; }
+  if (!address) { showErr('주소를 입력해주세요.'); return; }
+  if (!geminiKey) { showErr('Gemini API Key를 입력해주세요. aistudio.google.com에서 무료 발급 가능합니다.'); return; }
 
-  document.getElementById('error-box').classList.remove('active');
+  document.getElementById('err').classList.remove('active');
   showResult(false);
   showLoading(true);
   document.getElementById('btn-go').disabled = true;
 
   try {
-    setLoadingStep(1);
-    await sleep(500);
-    setLoadingStep(2);
-    await sleep(600);
-    setLoadingStep(3);
-
-    // CORS 프록시 사용 (로컬 파일로 열 때 필요)
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`;
-    const PROXY_URL = 'https://corsproxy.io/?' + encodeURIComponent(API_URL);
-
-    const payload = JSON.stringify({
-      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents: [{
-        role: 'user',
-        parts: [{ text: `신고 주소: ${address}\n\n위 주소에 대한 소방 브리핑을 JSON으로 생성해주세요.` }]
-      }],
-      generationConfig: {
-        temperature: 0.4,
-        maxOutputTokens: 1500,
-        responseMimeType: 'application/json'
-      }
-    });
-
-    // 직접 호출 먼저 시도, 실패 시 프록시 사용
-    let response;
-    try {
-      response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload
-      });
-    } catch {
-      response = await fetch(PROXY_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload
-      });
-    }
-
-    setLoadingStep(4);
+    setStep(1);
     await sleep(400);
 
+    // STEP 2: 건축물대장 조회 (선택)
+    setStep(2);
+    let realData = null;
+    if (buildingKey) {
+      realData = await fetchBuildingData(address, buildingKey);
+    }
+    await sleep(300);
+
+    // STEP 3: AI 분석
+    setStep(3);
+    const prompt = buildPrompt(address, realData);
+    await sleep(300);
+
+    // STEP 4: Gemini 호출
+    setStep(4);
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${geminiKey}`;
+    const PROXY = 'https://corsproxy.io/?' + encodeURIComponent(API_URL);
+
+    const payload = JSON.stringify({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.3, maxOutputTokens: 1800, responseMimeType: 'application/json' }
+    });
+
+    let response;
+    try {
+      response = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: payload });
+    } catch {
+      response = await fetch(PROXY, { method:'POST', headers:{'Content-Type':'application/json'}, body: payload });
+    }
+
     if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error?.message || 'API 오류가 발생했습니다.');
+      const e = await response.json().catch(()=>({}));
+      const msg = e?.error?.message || '';
+      if (msg.includes('API_KEY_INVALID') || msg.includes('API key')) throw new Error('Gemini API Key가 올바르지 않습니다. 키를 다시 확인해주세요.');
+      if (msg.includes('quota')) throw new Error('오늘 무료 사용량(250건)을 초과했습니다. 내일 다시 시도하세요.');
+      throw new Error('API 오류: ' + (msg || response.status));
     }
 
     const data = await response.json();
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) throw new Error('응답을 받지 못했습니다.');
+    if (!text) throw new Error('AI 응답을 받지 못했습니다. 다시 시도해주세요.');
 
     let result;
-    try {
-      result = JSON.parse(text.replace(/```json|```/g, '').trim());
-    } catch {
-      throw new Error('응답 파싱 오류. 다시 시도해주세요.');
+    try { result = JSON.parse(text.replace(/```json|```/g,'').trim()); }
+    catch { throw new Error('응답 파싱 오류. 다시 시도해주세요.'); }
+
+    // realData 강제 병합
+    if (realData) {
+      if (realData.mainPurpsCdNm) result.building.type = realData.mainPurpsCdNm;
+      if (realData.strctCdNm) result.building.structure = realData.strctCdNm;
+      if (realData.grndFlrCnt) result.building.floors = `지상${realData.grndFlrCnt}층${realData.ugrndFlrCnt ? '/지하'+realData.ugrndFlrCnt+'층' : ''}`;
+      if (realData.useAprDay) result.building.year = realData.useAprDay + '년';
+      if (realData.totArea) result.building.area = Math.round(realData.totArea) + '㎡';
+      result.data_source = 'real';
     }
 
-    renderBriefing(result, address);
+    renderBriefing(result, address, !!realData);
 
-  } catch (e) {
-    showError(e.message);
+  } catch(e) {
+    showErr(e.message);
   } finally {
     showLoading(false);
     document.getElementById('btn-go').disabled = false;
   }
 }
 
-function renderBriefing(r, address) {
-  renderRisk(r.risk_level);
-  document.getElementById('addr-badge').textContent = address;
+// ── 렌더링
+function renderBriefing(r, address, hasReal) {
+  // 위험도 배너
+  const b = document.getElementById('rbanner');
+  b.className = 'risk-banner ' + r.risk_level;
+  document.getElementById('ricon').textContent = r.risk_level==='high'?'🔴':r.risk_level==='mid'?'🟡':'🟢';
+  document.getElementById('rtitle').textContent = r.risk_level==='high'?'고위험':r.risk_level==='mid'?'보통':'저위험';
+  document.getElementById('rbadge').textContent = address;
 
-  renderMeta([
-    { key: '용도', val: r.building.type },
-    { key: '층수', val: r.building.floors },
-    { key: '구조', val: r.building.structure },
-    { key: '건축', val: r.building.year }
-  ]);
+  // 메타
+  const sourceLabel = hasReal
+    ? '<div class="meta-source">📡 실제 건축물대장</div>'
+    : '<div class="meta-source" style="color:var(--yellow)">🤖 AI 추정</div>';
+  document.getElementById('meta').innerHTML = [
+    {k:'용도', v:r.building.type},
+    {k:'층수', v:r.building.floors},
+    {k:'구조', v:r.building.structure},
+    {k:'건축', v:r.building.year}
+  ].map(i=>`<div class="meta-item"><div class="meta-key">${i.k}</div><div class="meta-val">${i.v||'-'}</div>${sourceLabel}</div>`).join('');
 
-  document.getElementById('building-info').textContent = r.summary;
-  renderCautions(r.cautions || []);
-  document.getElementById('history-info').textContent = r.history || '이력 없음';
-  renderHydrants(r.hydrants || []);
+  // 섹션들
+  let html = '';
 
-  document.getElementById('result-time').textContent =
-    '생성: ' + new Date().toLocaleTimeString('ko-KR');
+  // 데이터 출처 표시
+  if (hasReal) {
+    html += `<div class="section"><div class="real-data-row">📡 <span><b>건축물대장 실제 데이터</b> 기반 브리핑입니다. 건물 기본정보(용도·구조·층수·연도)는 공공데이터에서 직접 조회한 값입니다.</span></div></div>`;
+  } else {
+    html += `<div class="section"><div class="real-data-row" style="background:var(--yellow-dim);border-color:rgba(245,166,35,.2);color:#d4a852;">🤖 <span>건축물대장 API 키가 없어 <b>AI 추정값</b>을 사용합니다. 정확한 데이터를 위해 data.go.kr에서 건축물대장 API 키를 발급하세요.</span></div></div>`;
+  }
+
+  // 건물 현황
+  html += `<div class="section">
+    <div class="section-header">건물 현황</div>
+    <div class="section-body">${r.summary||''}</div>
+  </div>`;
+
+  // 진입 주의사항
+  if (r.cautions?.length) {
+    html += `<div class="section"><div class="section-header">진입 주의사항</div><div class="caution-list">`;
+    r.cautions.forEach(c=>{
+      html += `<div class="caution-item ${c.type}"><span style="font-size:15px;flex-shrink:0">${c.icon}</span><span>${c.text}</span></div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // 출동 이력
+  if (r.history) {
+    html += `<div class="section"><div class="section-header">출동 이력 패턴</div><div class="section-body">${r.history}</div></div>`;
+  }
+
+  // 소방용수
+  if (r.hydrants?.length) {
+    html += `<div class="section"><div class="section-header">인근 소방용수</div>`;
+    r.hydrants.forEach(h=>{
+      html += `<div class="hydrant-item">🚒 <span>${h.name}</span><span class="hydrant-dist">${h.dist}</span></div>`;
+    });
+    html += `</div>`;
+  }
+
+  document.getElementById('sections').innerHTML = html;
+  document.getElementById('rtime').textContent = '생성: ' + new Date().toLocaleTimeString('ko-KR');
 
   showResult(true);
-  document.getElementById('result-card').scrollIntoView({ behavior: 'smooth' });
-  window._lastResult = r;
-  window._lastAddress = address;
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+  window._R = r;
+  window._ADDR = address;
 }
 
-// ── 데모 모드 ──
-function useDemoMode() {
+// ── 데모
+function demoMode() {
   const demo = {
-    risk_level: 'high',
-    building: {
-      type: '노인요양시설',
-      floors: '지상3층/지하1층',
-      structure: '철근콘크리트',
-      year: '2003년',
-      area: '약 1,200㎡'
-    },
-    summary: '노인 입소자 약 60명 상주, 자력대피 불가 인원 다수. 지하1층 주차장 연결 계단 화재 시 연기 차단 중요. 3층 치매 전용 병동 있음.',
-    cautions: [
-      { type: 'warn', icon: '⚠️', text: '자력대피 불가 노인 다수 — 즉시 인원 파악 및 들것 대피 준비' },
-      { type: 'warn', icon: '⚠️', text: '지하 주차장 연기 역류 가능 — 계단 방화문 확인 필수' },
-      { type: 'info', icon: 'ℹ️', text: '야간 당직 인원 2명 수준 — 자체 초기진압 기대 어려움' },
-      { type: 'info', icon: 'ℹ️', text: '의료기기 및 산소통 보관 — 폭발 위험 구역 진입 주의' },
-      { type: 'ok', icon: '✅', text: '스프링클러 설비 설치 완료' }
+    risk_level:'high', data_source:'ai',
+    building:{type:'노인요양시설',floors:'지상3층/지하1층',structure:'철근콘크리트',year:'2003년',area:'1,240㎡'},
+    summary:'노인 입소자 약 60명 상주, 자력대피 불가 인원 다수. 지하1층 주차장 계단 통해 연기 역류 위험. 3층 치매 전용 병동 존재. 야간 당직 2명 수준으로 자체 초기진압 기대 어려움.',
+    cautions:[
+      {type:'warn',icon:'⚠️',text:'자력대피 불가 노인 다수 — 즉시 인원 파악 및 들것 대피 준비'},
+      {type:'warn',icon:'⚠️',text:'지하 주차장 연기 역류 가능 — 계단 방화문 확인 필수'},
+      {type:'info',icon:'ℹ️',text:'산소통·의료기기 보관 — 폭발 위험 구역 진입 주의'},
+      {type:'info',icon:'ℹ️',text:'야간 당직 2명 수준 — 자체 진압 기대 불가'},
+      {type:'ok',icon:'✅',text:'스프링클러 설비 설치 완료'}
     ],
-    history: '요양시설 유형 월 평균 1~2회 구급 출동 (낙상·심정지). 화재 출동 이력 없으나 야간 대피훈련 미흡 사례 다수.',
-    hydrants: [
-      { name: '정문 앞 소화전', dist: '약 30m' },
-      { name: '주차장 입구 소화전', dist: '약 80m' },
-      { name: '인근 도로변 소화전', dist: '약 150m' }
+    history:'요양시설 유형 월 평균 1~2회 구급 출동(낙상·심정지). 화재 이력 없으나 야간 대피훈련 미흡 다수.',
+    hydrants:[
+      {name:'정문 앞 소화전',dist:'약 30m'},
+      {name:'주차장 입구 소화전',dist:'약 80m'},
+      {name:'인근 도로변 소화전',dist:'약 150m'}
     ]
   };
-  document.getElementById('address-input').value = '경기도 구리시 교문동 노인복지관 (데모)';
-  renderBriefing(demo, '경기도 구리시 교문동 노인복지관 (데모)');
+  document.getElementById('addr').value='경기도 구리시 교문동 노인복지관 (데모)';
+  renderBriefing(demo,'경기도 구리시 교문동 노인복지관 (데모)',false);
 }
 
-// ── 결과 복사 ──
+// ── 복사
 function copyResult() {
-  if (!window._lastResult) return;
-  const r = window._lastResult;
-  const lines = [
-    `[출동 전 건물 브리핑] ${window._lastAddress}`,
-    `위험도: ${r.risk_level === 'high' ? '🔴 고위험' : r.risk_level === 'mid' ? '🟡 보통' : '🟢 저위험'}`,
+  if(!window._R)return;
+  const r=window._R;
+  const lines=[
+    `[출동 전 건물 브리핑] ${window._ADDR}`,
+    `위험도: ${r.risk_level==='high'?'🔴 고위험':r.risk_level==='mid'?'🟡 보통':'🟢 저위험'} | 데이터: ${r.data_source==='real'?'📡 실제 건축물대장':'🤖 AI 추정'}`,
     `건물: ${r.building.type} | ${r.building.floors} | ${r.building.structure} | ${r.building.year}`,
-    ``,
-    `[건물 현황]`,
-    r.summary,
-    ``,
-    `[진입 주의사항]`,
-    ...(r.cautions || []).map(c => `${c.icon} ${c.text}`),
-    ``,
-    `[출동 이력] ${r.history}`,
-    ``,
-    `[인근 소방용수]`,
-    ...(r.hydrants || []).map(h => `🚒 ${h.name} (${h.dist})`),
-    ``,
-    `생성: ${new Date().toLocaleString('ko-KR')} | 구리소방서 출동 브리핑 시스템`
+    ``,`[건물 현황]`,r.summary,``,
+    `[진입 주의사항]`,...(r.cautions||[]).map(c=>`${c.icon} ${c.text}`),``,
+    `[출동 이력] ${r.history}`,``,
+    `[인근 소방용수]`,...(r.hydrants||[]).map(h=>`🚒 ${h.name} (${h.dist})`),``,
+    `생성: ${new Date().toLocaleString('ko-KR')} | 구리소방서 출동 브리핑 시스템 v3`
   ];
   navigator.clipboard.writeText(lines.join('\n'))
-    .then(() => alert('클립보드에 복사되었습니다.'))
-    .catch(() => alert('복사 실패. 수동으로 선택해 복사해주세요.'));
+    .then(()=>alert('클립보드에 복사되었습니다.'))
+    .catch(()=>alert('복사 실패. 수동으로 선택해 복사해주세요.'));
 }
 
-// ── Enter 키 ──
-document.getElementById('address-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') runBriefing();
-});
-
-// ── 유틸 ──
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+document.getElementById('addr').addEventListener('keydown',e=>{if(e.key==='Enter')runBriefing();});
 </script>
 </body>
 </html>
